@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Click;
+use App\Services\DCMService;
 use Illuminate\Http\Request;
 use App\Traits\ResponseMaker;
 use App\Http\Controllers\Controller;
@@ -14,9 +15,10 @@ class ClickController extends Controller
 
     /**
      * @param Request $request
+     * @param DCMService $service
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function create(Request $request)
+    public function create(Request $request, DCMService $service)
     {
         $validator = Validator::make($request->all(), [
             'task_id' => 'required|integer|min:1',
@@ -32,6 +34,9 @@ class ClickController extends Controller
         $inputs['token'] = Click::generateToken();
         $click = Click::create($inputs);
         $response = ['query_param' => env('DCM_PARAM_KEY') . '=' . $click->token];
+
+        $service->registerClick($click);
+
         return $this->success($response);
     }
 
