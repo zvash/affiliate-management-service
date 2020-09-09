@@ -26,4 +26,6 @@ class Click extends Model
         }
         return $token;
     }
+
+
 }

@@ -25,16 +25,18 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
 
     $router->group(['namespace' => 'Api\V1'], function ($router) {
 
-        $router->post('clicks/create', 'ClickController@create');
-
         $router->group(['middleware' => 'auth'], function ($router) {
 
 
         });
 
         $router->group(['middleware' => 'admin'], function ($router) {
+            $router->post('admin/services/register', 'ServiceController@register');
+            $router->get('admin/services/all', 'ServiceController@getAll');
+        });
 
-
+        $router->group(['middleware' => 'trusted'], function ($router) {
+            $router->post('clicks/create', 'ClickController@create');
         });
     });
 

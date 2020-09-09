@@ -35,8 +35,6 @@ class ClickController extends Controller
         $click = Click::create($inputs);
         $response = ['query_param' => env('DCM_PARAM_KEY') . '=' . $click->token];
 
-        $service->registerClick($click);
-
         return $this->success($response);
     }
 
