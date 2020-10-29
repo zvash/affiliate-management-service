@@ -18,7 +18,7 @@ class Click extends Model
      */
     public static function generateToken()
     {
-        $prefix = env('CLICK_TOKEN_PREFIX', 'WinTale');
+        $prefix = env('CLICK_TOKEN_PREFIX', 'wintale');
         $token = $prefix . '-' . make_random_hash($prefix);
         $click = Click::where('token', $token)->first();
         if ($click) {
