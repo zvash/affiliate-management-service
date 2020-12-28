@@ -32,10 +32,34 @@ class ClickController extends Controller
 
         $inputs = $request->all();
         $inputs['token'] = Click::generateToken();
-        $click = Click::create($inputs);
+        $click = Click::where('task_id', $inputs['task_id'])
+            ->where('user_id', $inputs['user_id'])
+            ->whereNull('returned_amount')
+            ->first();
+        if ($click) {
+            $click->setAttribute('token', $inputs['token'])->save();
+            $click->refresh();
+        } else {
+            $click = Click::create($inputs);
+        }
         $response = ['query_param' => env('DCM_PARAM_KEY') . '=' . $click->token];
 
         return $this->success($response);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function all(Request $request)
+    {
+        if ($request->exists('user_id')) {
+            $userId = $request->get('user_id');
+            $page = $request->exists('page') ? $request->get('page') : 1;
+            $clicks = Click::where('user_id', $userId)->paginate(1, ['*'], 'page', $page);
+            return $this->success($clicks);
+        }
+        return $this->failMessage('Content not found', 404);
     }
 
     /**
@@ -55,5 +79,10 @@ class ClickController extends Controller
             return $this->success(['message' => 'done']);
         }
         return $this->failMessage('Content not found', 404);
+    }
+
+    public function claim(Request $request, int $taskId)
+    {
+
     }
 }
