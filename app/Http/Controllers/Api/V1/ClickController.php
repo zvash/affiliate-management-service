@@ -58,7 +58,7 @@ class ClickController extends Controller
             $page = $request->exists('page') ? $request->get('page') : 1;
             $clicks = Click::where('user_id', $userId)
                 ->orderBy('updated_at', 'DESC')
-                ->paginate(2, ['*'], 'page', $page);
+                ->paginate(10, ['*'], 'page', $page);
             return $this->success($clicks);
         }
         return $this->failMessage('Content not found', 404);
