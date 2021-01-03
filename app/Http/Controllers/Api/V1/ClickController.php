@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Click;
+use App\Services\AuthService;
 use App\Services\DCMService;
+use App\Services\WintaleShopService;
 use Illuminate\Http\Request;
 use App\Traits\ResponseMaker;
 use App\Http\Controllers\Controller;
@@ -83,8 +85,51 @@ class ClickController extends Controller
         return $this->failMessage('Content not found', 404);
     }
 
-    public function claim(Request $request, int $taskId)
+    /**
+     * @param Request $request
+     * @param WintaleShopService $wintaleShopService
+     * @param AuthService $authService
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function claim(Request $request, WintaleShopService $wintaleShopService, AuthService $authService)
     {
+        $validator = Validator::make($request->all(), [
+            'click_id' => 'required|integer|min:1',
+            'user_id' => 'required|integer|min:1',
+        ]);
 
+        if ($validator->fails()) {
+            return $this->failValidation($validator->errors());
+        }
+
+        $clickId = $request->get('click_id');
+        $userId = $request->get('user_id');
+        $click = Click::where('id', $clickId)
+            ->where('user_id', $userId)
+            ->first();
+        if ($click) {
+            if ($click->returned_amount === null) {
+                $userData = $authService->getUserById($userId);
+                if ($userData['status'] == 200) {
+                    $user = $userData['data'];
+                    $phone = $user['phone'];
+                    $email = $user['email'];
+                    $orderDate = $click->updated_at->format('Y-m-d H:i:s');
+                    $response = [];//$wintaleShopService->getOrders($click->offer_id, $orderDate, $phone, $email);
+                    if (!$response) {
+                        return $this->success(['task_id' => null]);
+                    } else {
+                        $click->returned_amount = 1000;
+                        $click->save();
+                        return $this->success(['task_id' => $click->task_id]);
+                    }
+                } else {
+                    return $this->failMessage($userData['data'], 400);
+                }
+            }
+            return $this->failMessage('Already claimed', 400);
+        } else {
+            return $this->failMessage('Content not found', 404);
+        }
     }
 }

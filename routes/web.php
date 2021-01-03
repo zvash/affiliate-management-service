@@ -38,6 +38,7 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
         $router->group(['middleware' => 'trusted'], function ($router) {
             $router->post('clicks/create', 'ClickController@create');
             $router->get('clicks/all', 'ClickController@all');
+            $router->post('clicks/claim', 'ClickController@claim');
         });
     });
 
