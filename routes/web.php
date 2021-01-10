@@ -39,6 +39,11 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
             $router->post('clicks/create', 'ClickController@create');
             $router->get('clicks/all', 'ClickController@all');
             $router->post('clicks/claim', 'ClickController@claim');
+
+            $router->post('claims/create', 'ClaimController@create');
+            $router->get('claims/all', 'ClaimController@all');
+            $router->post('claims/accept/referral', 'ClaimController@acceptReferral');
+            $router->post('claims/claim', 'ClaimController@claim');
         });
     });
 
