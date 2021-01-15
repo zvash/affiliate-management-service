@@ -18,12 +18,12 @@ class WintaleShopService
         $this->client = new Client(
             [
                 'base_uri' => $baseUrl,
-                'timeout' => config('timeout', 5)
+                'timeout' => config('timeout', 30)
             ]
         );
     }
 
-    public function getOrders(int $offerId, string $orderDate,?string $phone, ?string $email)
+    public function getOrders(int $offerId, string $orderDate,?string $phone, ?string $email = null)
     {
         if ($phone) {
             $phone = substr($phone, -10);
@@ -34,7 +34,6 @@ class WintaleShopService
             'phone' => $phone,
             'email' => $email
         ];
-
         try {
             $response = $this->client->request(
                 'POST',
@@ -46,8 +45,10 @@ class WintaleShopService
             );
             if ($response->getStatusCode() == 200) {
                 $contents = json_decode($response->getBody()->getContents(), 1);
-                dd($contents);
-                return ['data' => $contents['data'], 'status' => 200];
+                return [
+                    'data' => is_numeric($contents) ? $contents * 1 : $contents,
+                    'status' => 200
+                ];
             }
         } catch (GuzzleException $exception) {
             return ['data' => $exception->getResponse()->getBody()->getContents(), 'status' => $exception->getCode()];

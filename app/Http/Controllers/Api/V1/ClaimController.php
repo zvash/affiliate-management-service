@@ -138,8 +138,8 @@ class ClaimController extends Controller
                     $phone = $user['phone'];
                     $email = $user['email'];
                     $orderDate = $claim->updated_at->format('Y-m-d H:i:s');
-                    $response = [];//$wintaleShopService->getOrders($click->offer_id, $orderDate, $phone, $email);
-                    if ($response) {
+                    $response = $wintaleShopService->getOrders($claim->remote_id, $orderDate, $phone, $email);
+                    if ($response['status'] == 200 && count($response['data']) > 0) {
                         $claim->accepted = true;
                         $claim->claimed_at = date('Y-m-d H:i:s');
                         $claim->save();
