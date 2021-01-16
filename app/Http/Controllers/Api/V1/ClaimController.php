@@ -125,7 +125,7 @@ class ClaimController extends Controller
             if ($claim->claimed_at) {
                 return $this->failMessage('Already claimed', 400);
             }
-            if ($claim->claimable_type == 'referral') {
+            if ($claim->claimable_type == 'referrals') {
                 if ($claim->accepted) {
                     $claim->claimed_at = date('Y-m-d H:i:s');
                     $claim->save();
