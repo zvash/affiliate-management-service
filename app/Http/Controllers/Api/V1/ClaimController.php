@@ -147,12 +147,12 @@ class ClaimController extends Controller
                         $claim->save();
                         return $this->success($claim);
                     }
-                    return $this->failMessage('Bad Claim', 400);
+                    return $this->failMessage('Task is not completed on shop.wintale.app', 400);
                 } else {
                     return $this->failMessage($userData['data'], 400);
                 }
             } else {
-                return $this->failMessage('Bad Claim', 400);
+                return $this->failMessage('Claim type is not supported. Contact administrator.', 400);
             }
         } else {
             return $this->failMessage('Content not found', 404);
