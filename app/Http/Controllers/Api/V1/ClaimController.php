@@ -135,18 +135,21 @@ class ClaimController extends Controller
                 }
             } else if ($claim->claimable_type == 'tasks') {
                 $userData = $authService->getUserById($userId);
+                $message = '';
                 if ($userData['status'] == 200) {
                     $user = $userData['data'];
                     $phone = $user['phone'];
                     $email = $user['email'];
                     $orderDate = $claim->updated_at->format('Y-m-d H:i:s');
                     $response = $wintaleShopService->getOrders($claim->remote_id, $orderDate, $phone, $email);
+                    $message = json_encode($response);
                     if ($response['status'] == 200 && count($response['data']) > 0) {
                         $claim->accepted = true;
                         $claim->claimed_at = date('Y-m-d H:i:s');
                         $claim->save();
                         return $this->success($claim);
                     }
+                    return $this->failMessage(json_encode([$message, $claim->remote_id, $orderDate, $phone, $email]), 400);
                     return $this->failMessage('Task is not completed on shop.wintale.app', 400);
                 } else {
                     return $this->failMessage($userData['data'], 400);
