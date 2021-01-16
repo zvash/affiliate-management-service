@@ -26,7 +26,7 @@ class WintaleShopService
     public function getOrders(int $offerId, string $orderDate,?string $phone, ?string $email = null)
     {
         if ($phone) {
-            $phone = substr($phone, -10);
+            $phone = substr($phone, -9);
         }
         $payload = [
             'product_id' => $offerId,
