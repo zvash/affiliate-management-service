@@ -129,8 +129,10 @@ class ClaimController extends Controller
                 if ($claim->accepted) {
                     $claim->claimed_at = date('Y-m-d H:i:s');
                     $claim->save();
+                    return $this->success($claim);
+                } else {
+                    return $this->failMessage('User that used your referral code has not finished any tasks.', 400);
                 }
-                return $this->success($claim);
             } else if ($claim->claimable_type == 'tasks') {
                 $userData = $authService->getUserById($userId);
                 if ($userData['status'] == 200) {
