@@ -147,7 +147,7 @@ class ClaimController extends Controller
                         $claim->save();
                         return $this->success($claim);
                     }
-                    return $this->failMessage('Task is not completed on shop.wintale.app', 400);
+                    return $this->failMessage('task-not-done-' . $claim->claimable_id, 400);
                 } else {
                     return $this->failMessage($userData['data'], 400);
                 }
